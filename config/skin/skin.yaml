@@ -1,0 +1,11 @@
+matrix:
+  zookeeper:
+#    host: zookeeper.default
+    host: 39.106.153.134
+    port: 30181
+from:
+  host: 39.106.153.134
+  port: 30092
+to:
+  host: 39.106.153.134
+  port: 30092
