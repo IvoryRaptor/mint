@@ -1,11 +1,12 @@
 matrix:
   zookeeper:
-#    host: zookeeper.default
-    host: 39.106.153.134
+    host: zookeeper.default
     port: 30181
-from:
-  host: 39.106.153.134
+mq:
+  type: kafka
+  host: kafka.default
   port: 30092
-to:
-  host: 39.106.153.134
-  port: 30092
+  other:
+    partition: 10
+scheduler:
+  second: 60
