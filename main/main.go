@@ -2,20 +2,28 @@ package main
 
 import (
 	"log"
-	"github.com/IvoryRaptor/skin/skin"
+	"github.com/IvoryRaptor/skin/kernel"
+	"github.com/IvoryRaptor/dragonfly"
+	"github.com/IvoryRaptor/skin/scheduler"
 )
 
 func main() {
-	s := skin.Skin{
-		ConfigFile: "./config/postoffice/config.yaml",
-	}
-	err := k.Config()
+	s := kernel.Skin{}
+	s.New("skin")
+	err := dragonfly.Builder(
+		&s,
+		[]dragonfly.IServiceFactory{
+			&scheduler.Factory{},
+			&dragonfly.ZookeeperFactory{},
+
+		})
+	s.SetFields()
 	if err != nil {
-		log.Fatalf(err.Error())
+		log.Fatal(err.Error())
 	}
-	err = k.Start()
+	err = s.Start()
 	if err != nil {
-		log.Fatalf(err.Error())
+		log.Fatal(err.Error())
 	}
-	k.WaitStop()
+	s.WaitStop()
 }

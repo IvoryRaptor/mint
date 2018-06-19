@@ -7,23 +7,21 @@ import (
 	"fmt"
 	"os"
 	"log"
-	"strconv"
 )
 
 type Kafka struct {
-	kernel   postoffice.IKernel
+	kernel   postoffice.IPostOffice
 	producer *kafka.Producer
 	consumer *kafka.Consumer
 	partition int
 }
 
-func (k * Kafka)Publish(topic string,actor []byte,payload []byte) error {
+func (k * Kafka)Publish(topic string,payload []byte) error {
 	for i := 0; i < k.partition; i++ {
 		deliveryChan := make(chan kafka.Event)
 		err := k.producer.Produce(
 			&kafka.Message{
 				TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: int32(i)},
-				Key:            actor,
 				Value:          []byte{},
 			},
 			deliveryChan)
@@ -43,7 +41,7 @@ func (k * Kafka)Publish(topic string,actor []byte,payload []byte) error {
 	return nil
 }
 
-func (k * Kafka)Config(kernel postoffice.IKernel, config *Config, ) error{
+func (k * Kafka)Config(kernel postoffice.IPostOffice, config *Config, ) error{
 	k.kernel = kernel
 	var err error = nil
 	host := fmt.Sprintf("%s:%d",config.Host,config.Port)
@@ -67,7 +65,7 @@ func (k * Kafka)Config(kernel postoffice.IKernel, config *Config, ) error{
 
 func (k * Kafka)Start() error {
 	log.Printf("mq start")
-	err := k.consumer.SubscribeTopics([]string{fmt.Sprintf("postoffice-%s", k.kernel.GetHost())}, nil)
+	err := k.consumer.SubscribeTopics([]string{"kernel"}, nil)
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to create consumer: %s\n", err)

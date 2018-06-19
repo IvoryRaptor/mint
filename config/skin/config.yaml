@@ -1,0 +1,13 @@
+zookeeper:
+  type: zookeeper
+  host: zookeeper.default
+  port: 2181
+  path: /matrixs
+  level: 2
+mq:
+  type: kafka
+  host: kafka.default
+  port: 9092
+  partition: 10
+scheduler:
+  second: 5
