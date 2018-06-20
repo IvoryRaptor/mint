@@ -4,6 +4,8 @@ import (
 	"github.com/IvoryRaptor/skin"
 	"github.com/IvoryRaptor/dragonfly"
 	"time"
+	"github.com/golang/protobuf/proto"
+	"log"
 )
 
 type Service struct {
@@ -34,8 +36,23 @@ func (s *Service) Start() error {
 			d := <-s.ch
 			switch d {
 			case 1:
-				for _,topic:=range s.skin.GetTopics(){
-					println(topic)
+				mes := skin.MQMessage{
+					Source: &skin.Address{
+						Matrix: "default",
+						Device: "skin",
+					},
+					Destination: &skin.Address{
+						Matrix: "",
+						Device: "",
+					},
+					Resource: "skin",
+					Action:   "heart",
+					Payload:  make([]byte, 0),
+				}
+				payload, _ := proto.Marshal(&mes)
+				for _,topic:=range s.skin.GetTopics() {
+					log.Printf("Publish %s", topic)
+					s.skin.Publish(topic, payload)
 				}
 			case -1:
 				goto END
