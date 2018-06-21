@@ -1,9 +1,11 @@
 package kernel
 
 import (
-	"github.com/IvoryRaptor/skin/mq"
-	"github.com/IvoryRaptor/skin"
 	"github.com/IvoryRaptor/dragonfly"
+	"github.com/IvoryRaptor/postoffice"
+	"github.com/IvoryRaptor/dragonfly/mq"
+	"github.com/golang/protobuf/proto"
+	"log"
 )
 
 type Skin struct {
@@ -22,14 +24,20 @@ func (skin *Skin) GetTopics() []string {
 	return result
 }
 
-func (skin *Skin) Arrive(msg *skin.MQMessage) {
-
+func (skin *Skin) Arrive(data []byte) {
+	msg := postoffice.MQMessage{}
+	err := proto.Unmarshal(data, &msg)
+	if err != nil {
+		log.Println(err.Error())
+		return
+	}
 }
 
-func (skin *Skin) Publish(topic string, payload []byte) error {
-	return nil
+func (skin *Skin) Publish(topic string, actor []byte, payload []byte) error {
+	return skin.mq.Publish(topic, actor, payload)
 }
 
 func (skin *Skin) SetFields() {
 	skin.zookeeper = skin.GetService("zookeeper").(*dragonfly.Zookeeper)
+	skin.mq = skin.GetService("mq").(mq.IMQ)
 }

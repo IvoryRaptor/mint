@@ -1,12 +1,11 @@
 package skin
 
 import (
-	"github.com/IvoryRaptor/dragonfly"
+	"github.com/IvoryRaptor/dragonfly/mq"
 )
 
 type ISkin interface {
-	dragonfly.IKernel
-	Publish(topic string, payload []byte) error
-	Arrive(msg *MQMessage)
+	mq.IArrive
+	Publish(topic string, actor []byte, payload []byte) error
 	GetTopics() []string
 }

@@ -6,6 +6,7 @@ import (
 	"time"
 	"github.com/golang/protobuf/proto"
 	"log"
+	"github.com/IvoryRaptor/postoffice"
 )
 
 type Service struct {
@@ -31,17 +32,18 @@ func (s *Service) Start() error {
 			time.Sleep(time.Duration(s.second) * time.Second)
 		}
 	}()
+	actor := make([]byte, 0)
 	go func() {
 		for {
 			d := <-s.ch
 			switch d {
 			case 1:
-				mes := skin.MQMessage{
-					Source: &skin.Address{
+				mes := postoffice.MQMessage{
+					Source: &postoffice.Address{
 						Matrix: "default",
 						Device: "skin",
 					},
-					Destination: &skin.Address{
+					Destination: &postoffice.Address{
 						Matrix: "",
 						Device: "",
 					},
@@ -50,9 +52,9 @@ func (s *Service) Start() error {
 					Payload:  make([]byte, 0),
 				}
 				payload, _ := proto.Marshal(&mes)
-				for _,topic:=range s.skin.GetTopics() {
+				for _, topic := range s.skin.GetTopics() {
 					log.Printf("Publish %s", topic)
-					s.skin.Publish(topic, payload)
+					s.skin.Publish(topic, actor, payload)
 				}
 			case -1:
 				goto END

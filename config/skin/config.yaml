@@ -10,4 +10,4 @@ mq:
   port: 9092
   partition: 10
 scheduler:
-  second: 5
+  second: 20

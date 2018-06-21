@@ -1,0 +1,9 @@
+syntax = "proto3";
+package skin;
+
+message SkinPayload{
+    string matrix = 1;
+    string angler = 2;
+    string number = 3;
+    int64 time=4;
+}
