@@ -7,7 +7,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"log"
 	"github.com/IvoryRaptor/postoffice"
-	"strconv"
+	"strings"
 )
 
 type Service struct {
@@ -42,6 +42,7 @@ func (s *Service) Start() error {
 			switch d {
 			case 1:
 				for _, topic := range s.mint.GetTopics() {
+					sp := strings.Split(topic, "_")
 					for i := 0; i < s.partition; i++ {
 						mes := postoffice.MQMessage{
 							Source: &postoffice.Address{
@@ -49,12 +50,12 @@ func (s *Service) Start() error {
 								Device: "mint",
 							},
 							Destination: &postoffice.Address{
-								Matrix: topic,
-								Device: strconv.Itoa(i),
+								Matrix: sp[0],
+								Device: sp[1],
 							},
 							Resource: "mint",
 							Action:   "heart",
-							Payload:  make([]byte, 0),
+							Payload:  []byte{byte(i)},
 						}
 						payload, _ := proto.Marshal(&mes)
 						log.Printf("Publish %s", topic)
