@@ -6,12 +6,11 @@ import (
 	"github.com/IvoryRaptor/dragonfly"
 	"github.com/IvoryRaptor/mint/scheduler"
 	"github.com/IvoryRaptor/mint/mq"
-	"github.com/samuel/go-zookeeper/zk"
 )
 
 func main() {
 	s := kernel.Mint{}
-	s.New("skin")
+	s.New("mint")
 	s.Set("matrix","default")
 	s.Set("angler", "mint")
 	err := dragonfly.Builder(
@@ -29,6 +28,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-	s.Zookeeper.Create("/iotnn/default/mint._heart/mint", make([]byte, 0), 0, zk.WorldACL(zk.PermAll))
+	//s.Zookeeper.Create("/iotnn/default/mint._heart/mint", make([]byte, 0), 0, zk.WorldACL(zk.PermAll))
 	s.WaitStop()
 }

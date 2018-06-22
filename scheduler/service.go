@@ -11,7 +11,7 @@ import (
 )
 
 type Service struct {
-	skin      mint.IMint
+	mint      mint.IMint
 	ch        chan int
 	run       bool
 	second    int
@@ -19,7 +19,7 @@ type Service struct {
 }
 
 func (s *Service) Config(kernel dragonfly.IKernel, config map[interface{}]interface{}) error {
-	s.skin = kernel.(mint.IMint)
+	s.mint = kernel.(mint.IMint)
 	s.ch = make(chan int)
 	s.run = false
 	s.second = config["second"].(int)
@@ -41,24 +41,24 @@ func (s *Service) Start() error {
 			d := <-s.ch
 			switch d {
 			case 1:
-				for _, topic := range s.skin.GetTopics() {
+				for _, topic := range s.mint.GetTopics() {
 					for i := 0; i < s.partition; i++ {
 						mes := postoffice.MQMessage{
 							Source: &postoffice.Address{
 								Matrix: "default",
-								Device: "skin",
+								Device: "mint",
 							},
 							Destination: &postoffice.Address{
 								Matrix: topic,
 								Device: strconv.Itoa(i),
 							},
-							Resource: "skin",
+							Resource: "mint",
 							Action:   "heart",
 							Payload:  make([]byte, 0),
 						}
 						payload, _ := proto.Marshal(&mes)
 						log.Printf("Publish %s", topic)
-						s.skin.Publish(topic, int32(i), actor, payload)
+						s.mint.Publish(topic, int32(i), actor, payload)
 					}
 				}
 			case -1:
@@ -76,5 +76,5 @@ func (s *Service) Stop() {
 	s.run = false
 	s.ch <- -1
 	close(s.ch)
-	s.skin.RemoveService(s)
+	s.mint.RemoveService(s)
 }
