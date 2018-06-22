@@ -1,26 +1,29 @@
 package scheduler
 
 import (
-	"github.com/IvoryRaptor/skin"
+	"github.com/IvoryRaptor/mint"
 	"github.com/IvoryRaptor/dragonfly"
 	"time"
 	"github.com/golang/protobuf/proto"
 	"log"
 	"github.com/IvoryRaptor/postoffice"
+	"strconv"
 )
 
 type Service struct {
-	skin   skin.ISkin
-	ch     chan int
-	run    bool
-	second int
+	skin      mint.IMint
+	ch        chan int
+	run       bool
+	second    int
+	partition int
 }
 
 func (s *Service) Config(kernel dragonfly.IKernel, config map[interface{}]interface{}) error {
-	s.skin = kernel.(skin.ISkin)
+	s.skin = kernel.(mint.IMint)
 	s.ch = make(chan int)
 	s.run = false
 	s.second = config["second"].(int)
+	s.partition = config["partition"].(int)
 	return nil
 }
 
@@ -38,23 +41,25 @@ func (s *Service) Start() error {
 			d := <-s.ch
 			switch d {
 			case 1:
-				mes := postoffice.MQMessage{
-					Source: &postoffice.Address{
-						Matrix: "default",
-						Device: "skin",
-					},
-					Destination: &postoffice.Address{
-						Matrix: "",
-						Device: "",
-					},
-					Resource: "skin",
-					Action:   "heart",
-					Payload:  make([]byte, 0),
-				}
-				payload, _ := proto.Marshal(&mes)
 				for _, topic := range s.skin.GetTopics() {
-					log.Printf("Publish %s", topic)
-					s.skin.Publish(topic, actor, payload)
+					for i := 0; i < s.partition; i++ {
+						mes := postoffice.MQMessage{
+							Source: &postoffice.Address{
+								Matrix: "default",
+								Device: "skin",
+							},
+							Destination: &postoffice.Address{
+								Matrix: topic,
+								Device: strconv.Itoa(i),
+							},
+							Resource: "skin",
+							Action:   "heart",
+							Payload:  make([]byte, 0),
+						}
+						payload, _ := proto.Marshal(&mes)
+						log.Printf("Publish %s", topic)
+						s.skin.Publish(topic, int32(i), actor, payload)
+					}
 				}
 			case -1:
 				goto END

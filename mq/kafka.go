@@ -7,21 +7,16 @@ import (
 
 type Kafka struct {
 	mq.Kafka
-	partition int
 }
 
-func (k * Kafka)Publish(topic string,actor []byte,payload []byte) error {
-	for i := 0; i < k.partition; i++ {
-		k.KafkaPublish(topic, int32(i), actor, payload)
-	}
-	return nil
+func (k *Kafka) Publish(topic string, partition int32, actor []byte, payload []byte) error {
+	return k.KafkaPublish(topic, partition, actor, payload)
 }
 
 func (k *Kafka) Config(kernel dragonfly.IKernel, config map[interface{}]interface{}) error {
 	err := k.KafkaConfig(kernel, config)
-	if err!=nil{
+	if err != nil {
 		return err
 	}
-	k.partition = config["partition"].(int)
 	return nil
 }

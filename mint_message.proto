@@ -1,7 +1,7 @@
 syntax = "proto3";
-package skin;
+package mint;
 
-message SkinPayload{
+message MintPayload{
     string matrix = 1;
     string angler = 2;
     string number = 3;

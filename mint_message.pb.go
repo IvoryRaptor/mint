@@ -10,11 +10,11 @@ It is generated from these files:
 It has these top-level messages:
 	SkinPayload
 */
-package skin
+package mint
 
-import proto "github.com/golang/protobuf/proto"
-import fmt "fmt"
-import math "math"
+import "github.com/golang/protobuf/proto"
+import "fmt"
+import "math"
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
@@ -27,40 +27,40 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
-type SkinPayload struct {
+type MintPayload struct {
 	Matrix string `protobuf:"bytes,1,opt,name=matrix" json:"matrix,omitempty"`
 	Angler string `protobuf:"bytes,2,opt,name=angler" json:"angler,omitempty"`
 	Number string `protobuf:"bytes,3,opt,name=number" json:"number,omitempty"`
 	Time   int64  `protobuf:"varint,4,opt,name=time" json:"time,omitempty"`
 }
 
-func (m *SkinPayload) Reset()                    { *m = SkinPayload{} }
-func (m *SkinPayload) String() string            { return proto.CompactTextString(m) }
-func (*SkinPayload) ProtoMessage()               {}
-func (*SkinPayload) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
+func (m *MintPayload) Reset()                    { *m = MintPayload{} }
+func (m *MintPayload) String() string            { return proto.CompactTextString(m) }
+func (*MintPayload) ProtoMessage()               {}
+func (*MintPayload) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
 
-func (m *SkinPayload) GetMatrix() string {
+func (m *MintPayload) GetMatrix() string {
 	if m != nil {
 		return m.Matrix
 	}
 	return ""
 }
 
-func (m *SkinPayload) GetAngler() string {
+func (m *MintPayload) GetAngler() string {
 	if m != nil {
 		return m.Angler
 	}
 	return ""
 }
 
-func (m *SkinPayload) GetNumber() string {
+func (m *MintPayload) GetNumber() string {
 	if m != nil {
 		return m.Number
 	}
 	return ""
 }
 
-func (m *SkinPayload) GetTime() int64 {
+func (m *MintPayload) GetTime() int64 {
 	if m != nil {
 		return m.Time
 	}
@@ -68,10 +68,10 @@ func (m *SkinPayload) GetTime() int64 {
 }
 
 func init() {
-	proto.RegisterType((*SkinPayload)(nil), "skin.SkinPayload")
+	proto.RegisterType((*MintPayload)(nil), "mint.MintPayload")
 }
 
-func init() { proto.RegisterFile("skin_message.proto", fileDescriptor0) }
+func init() { proto.RegisterFile("mint_message.proto", fileDescriptor0) }
 
 var fileDescriptor0 = []byte{
 	// 131 bytes of a gzipped FileDescriptorProto

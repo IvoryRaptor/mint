@@ -8,6 +8,6 @@ mq:
   type: kafka
   host: kafka.default
   port: 9092
-  partition: 10
 scheduler:
-  second: 20
+  second: 5
+  partition: 3
