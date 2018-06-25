@@ -7,13 +7,20 @@ import (
 	"log"
 	"github.com/IvoryRaptor/mint/mq"
 	//"github.com/IvoryRaptor/mint"
-	mint "github.com/IvoryRaptor/mint"
+	"github.com/IvoryRaptor/mint"
+	"sync"
 )
 
 type Mint struct {
 	dragonfly.Kernel
 	mq        *mq.Kafka
 	Zookeeper *dragonfly.Zookeeper
+	matrixMap *sync.Map
+}
+
+type Angler struct {
+	Number    string
+	Partition map[int]int64
 }
 
 func (m *Mint) GetTopics() []string {
@@ -37,22 +44,37 @@ func (m *Mint) Arrive(data []byte) {
 		log.Println(err.Error())
 		return
 	}
-
-	println(msg.Source.Matrix, msg.Source.Device)
-	println(msg.Destination.Matrix, msg.Destination.Device)
-	println(msg.Resource, msg.Action)
-
 	mit := mint.MintPayload{}
 	err = proto.Unmarshal(msg.Payload, &mit)
 	if err != nil {
 		log.Println(err.Error())
 		return
 	}
-	println("--------------")
-	println(mit.Partition, mit.Number, mit.Time)
+	t, _ := m.matrixMap.LoadOrStore(msg.Source.Matrix, &sync.Map{})
+	matrix := t.(*sync.Map)
+
+	t, _ = matrix.LoadOrStore(msg.Source.Device, &sync.Map{})
+
+	angler := t.(*sync.Map)
+	t, _ = angler.LoadOrStore(mit.Number, &sync.Map{})
+	p := t.(*sync.Map)
+	p.LoadOrStore(mit.Partition, mit.Time)
+
+	m.matrixMap.Range(func(key, value interface{}) bool {
+		s := value.(*sync.Map)
+		s.Range(func(key, value interface{}) bool {
+			return true
+		})
+		return true
+	})
 }
 
 func (m *Mint) SetFields() {
 	m.Zookeeper = m.GetService("zookeeper").(*dragonfly.Zookeeper)
 	m.mq = m.GetService("mq").(*mq.Kafka)
+	m.matrixMap = &sync.Map{}
+}
+
+func (m *Mint) GetMatrix() *sync.Map {
+	return m.matrixMap
 }

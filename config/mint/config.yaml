@@ -1,3 +1,5 @@
+http:
+  port: 9909
 zookeeper:
   type: zookeeper
   host: zookeeper.default
@@ -9,5 +11,5 @@ mq:
   host: kafka.default
   port: 9092
 scheduler:
-  second: 5
+  second: 10
   partition: 3

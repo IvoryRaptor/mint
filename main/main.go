@@ -6,6 +6,7 @@ import (
 	"github.com/IvoryRaptor/dragonfly"
 	"github.com/IvoryRaptor/mint/scheduler"
 	"github.com/IvoryRaptor/mint/mq"
+	"github.com/IvoryRaptor/mint/http"
 )
 
 func main() {
@@ -19,6 +20,7 @@ func main() {
 			&scheduler.Factory{},
 			&dragonfly.ZookeeperFactory{},
 			&mq.Factory{},
+			&http.Factory{},
 		})
 	s.SetFields()
 	if err != nil {
@@ -28,6 +30,5 @@ func main() {
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-	//s.Zookeeper.Create("/iotnn/default/mint._heart/mint", make([]byte, 0), 0, zk.WorldACL(zk.PermAll))
 	s.WaitStop()
 }
