@@ -30,13 +30,16 @@ func (s *Service) convertMatrix(name string, m *sync.Map) map[string]interface{}
 func (s *Service) convertAngler(a *sync.Map) map[string]interface{} {
 	result := map[string]interface{}{}
 	a.Range(func(key, value interface{}) bool {
-		angler := map[string]interface{}{}
-		b := value.(*sync.Map)
-		b.Range(func(key, value interface{}) bool {
-			angler[fmt.Sprintf("%d", key)] = value
-			return true
-		})
-		result[key.(string)] = angler
+		result[key.(string)] = s.convertCopy(value.(*sync.Map))
+		return true
+	})
+	return result
+}
+
+func (s *Service) convertCopy(b *sync.Map) map[string]interface{} {
+	result := map[string]interface{}{}
+	b.Range(func(key, value interface{}) bool {
+		result[fmt.Sprintf("%d", key)] = value
 		return true
 	})
 	return result
@@ -69,13 +72,42 @@ func (s *Service) Config(k dragonfly.IKernel, config map[interface{}]interface{}
 				}
 			}
 		case 2:
-			//value, ok := kernel.GetMatrix().Load(sp[0])
-			//if ok {
-			//	result = append(result, value)
-			//} else {
-			//	w.WriteHeader(404)
-			//	return
-			//}
+			value, ok := matrixMap.Load(sp[0])
+			if !ok {
+				w.WriteHeader(404)
+				return
+			} else {
+				matrix := value.(*sync.Map)
+				value, ok := matrix.Load(sp[1])
+				if !ok {
+					w.WriteHeader(404)
+					return
+				} else {
+					result = s.convertAngler(value.(*sync.Map))
+				}
+			}
+		case 3:
+			value, ok := matrixMap.Load(sp[0])
+			if !ok {
+				w.WriteHeader(404)
+				return
+			} else {
+				matrix := value.(*sync.Map)
+				value, ok := matrix.Load(sp[1])
+				if !ok {
+					w.WriteHeader(404)
+					return
+				} else {
+					angler:=value.(*sync.Map)
+					value, ok := angler.Load(sp[2])
+					if !ok{
+						w.WriteHeader(404)
+						return
+					}else{
+						result = s.convertCopy(value.(*sync.Map))
+					}
+				}
+			}
 		}
 		if result == nil {
 			w.WriteHeader(404)

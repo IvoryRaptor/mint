@@ -58,7 +58,7 @@ func (m *Mint) Arrive(data []byte) {
 	angler := t.(*sync.Map)
 	t, _ = angler.LoadOrStore(mit.Number, &sync.Map{})
 	p := t.(*sync.Map)
-	p.LoadOrStore(mit.Partition, mit.Time)
+	p.Store(mit.Partition, mit.Time)
 
 	m.matrixMap.Range(func(key, value interface{}) bool {
 		s := value.(*sync.Map)

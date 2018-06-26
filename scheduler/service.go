@@ -53,6 +53,7 @@ func (s *Service) Start() error {
 								Matrix: sp[0],
 								Device: sp[1],
 							},
+							Time:     time.Now().Unix(),
 							Resource: "mint",
 							Action:   "heart",
 							Payload:  []byte{byte(i)},
