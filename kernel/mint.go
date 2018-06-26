@@ -18,11 +18,6 @@ type Mint struct {
 	matrixMap *sync.Map
 }
 
-type Angler struct {
-	Number    string
-	Partition map[int]int64
-}
-
 func (m *Mint) GetTopics() []string {
 	result := make([]string, 0)
 	for key, v := range m.Zookeeper.GetChildes() {
