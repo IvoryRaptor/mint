@@ -9,6 +9,7 @@ import (
 	//"github.com/IvoryRaptor/mint"
 	"github.com/IvoryRaptor/mint"
 	"sync"
+	"strings"
 )
 
 type Mint struct {
@@ -45,10 +46,11 @@ func (m *Mint) Arrive(data []byte) {
 		log.Println(err.Error())
 		return
 	}
-	t, _ := m.matrixMap.LoadOrStore(msg.Source.Matrix, &sync.Map{})
+	caller := strings.Split(string(msg.Caller), "_")
+	t, _ := m.matrixMap.LoadOrStore(caller[0], &sync.Map{})
 	matrix := t.(*sync.Map)
 
-	t, _ = matrix.LoadOrStore(msg.Source.Device, &sync.Map{})
+	t, _ = matrix.LoadOrStore(caller[1], &sync.Map{})
 
 	angler := t.(*sync.Map)
 	t, _ = angler.LoadOrStore(mit.Number, &sync.Map{})

@@ -35,6 +35,7 @@ func (s *Service) Start() error {
 			time.Sleep(time.Duration(s.second) * time.Second)
 		}
 	}()
+	caller := []byte("default_mint")
 	actor := make([]byte, 0)
 	go func() {
 		for {
@@ -45,14 +46,9 @@ func (s *Service) Start() error {
 					sp := strings.Split(topic, "_")
 					for i := 0; i < s.partition; i++ {
 						mes := postoffice.MQMessage{
-							Source: &postoffice.Address{
-								Matrix: "default",
-								Device: "mint",
-							},
-							Destination: &postoffice.Address{
-								Matrix: sp[0],
-								Device: sp[1],
-							},
+							Caller:   caller,
+							Matrix:   sp[0],
+							Device:   sp[1],
 							Time:     time.Now().Unix(),
 							Resource: "mint",
 							Action:   "heart",
