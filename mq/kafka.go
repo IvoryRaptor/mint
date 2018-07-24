@@ -3,6 +3,7 @@ package mq
 import (
 	"github.com/IvoryRaptor/dragonfly/mq"
 	"github.com/IvoryRaptor/dragonfly"
+	"fmt"
 )
 
 type Kafka struct {
@@ -14,6 +15,7 @@ func (k *Kafka) Publish(topic string, partition int32, actor []byte, payload []b
 }
 
 func (k *Kafka) Config(kernel dragonfly.IKernel, config map[interface{}]interface{}) error {
+	k.Topic = fmt.Sprintf("%s_%s", kernel.Get("matrix"), kernel.Get("angler"))
 	err := k.KafkaConfig(kernel, config)
 	if err != nil {
 		return err
